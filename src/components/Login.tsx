@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { createUser } from '../services/userAPI';
 
 function Login() {
+  const navigate = useNavigate();
   const [user, setUser] = useState({ name: '' });
   const [carregando, setCarregando] = useState(false);
   const handleEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -15,6 +17,7 @@ function Login() {
     setCarregando(true);
     await fetchuser();
     setCarregando(false);
+    navigate('/search');
   };
   const fetchuser = async () => {
     await createUser(user);
