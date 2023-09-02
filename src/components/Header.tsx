@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink, useLinkClickHandler } from 'react-router-dom';
 import { getUser } from '../services/userAPI';
 import { UserType } from '../types';
 
@@ -30,9 +30,9 @@ function Header() {
   return (
     <>
       <header data-testid="header-component" />
-      <Link to="/search" data-testid="link-to-search" />
-      <Link to="/favorites" data-testid="link-to-favorites" />
-      <Link to="/profile" data-testid="link-to-profile" />
+      <Link to="/search" data-testid="link-to-search">search</Link>
+      <Link to="/favorites" data-testid="link-to-favorites">Favorites</Link>
+      <Link to="/profile" data-testid="link-to-profile">Profile</Link>
       <p data-testid="header-user-name">{ userDysplay }</p>
     </>
   );
