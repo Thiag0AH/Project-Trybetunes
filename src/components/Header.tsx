@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, NavLink, useLinkClickHandler } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { getUser } from '../services/userAPI';
 import { UserType } from '../types';
 

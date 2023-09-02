@@ -1,10 +1,22 @@
+import { useState } from 'react';
 import { SongType } from '../types';
 
 type MusicCardProps = {
   card: SongType
 };
+type Heart = 'empty_heart.png' | 'checked_heart.png';
 
 function MusicCard({ card }: MusicCardProps) {
+  const fullHeart = 'checked_heart.png';
+  const emptyHeart = 'empty_heart.png';
+  const [heartPng, setHeartPng] = useState<Heart>(emptyHeart);
+  const handleFavorite = () => {
+    if (heartPng === emptyHeart) {
+      setHeartPng(fullHeart);
+    } else {
+      setHeartPng(emptyHeart);
+    }
+  };
   return (
     <>
       <p>{card.trackName}</p>
@@ -15,6 +27,19 @@ function MusicCard({ card }: MusicCardProps) {
         <code>audio</code>
         .
       </audio>
+      <label
+        htmlFor={ `favorite-id${card.trackId}` }
+        data-testid={ `checkbox-music-${card.trackId}` }
+      >
+        <img src={ `/src/images/${heartPng}` } alt="favorite" />
+
+        <input
+          type="checkbox"
+          name="favorite"
+          id={ `favorite-id${card.trackId}` }
+          onChange={ handleFavorite }
+        />
+      </label>
     </>
   );
 }
