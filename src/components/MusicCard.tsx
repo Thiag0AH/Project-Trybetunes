@@ -1,29 +1,32 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SongType } from '../types';
 import { addSong, removeSong } from '../services/favoriteSongsAPI';
 
+type SongTypePlus = {
+  isFavorite: boolean,
+  songType: SongType };
+
 type MusicCardProps = {
-  card: SongType
+  card: SongTypePlus
 };
-type Heart = 'empty_heart.png' | 'checked_heart.png';
 
 function MusicCard({ card }: MusicCardProps) {
   const fullHeart = 'checked_heart.png';
   const emptyHeart = 'empty_heart.png';
-  const [heartPng, setHeartPng] = useState<Heart>(emptyHeart);
+  const { isFavorite, songType } = card;
+  useEffect(() => {});
   const handleFavorite = async () => {
-    if (heartPng === emptyHeart) {
-      setHeartPng(fullHeart);
-      await addSong(card);
+    if (card.isFavorite) {
+      await removeSong(songType);
     } else {
-      setHeartPng(emptyHeart);
-      await removeSong(card);
+      await addSong(songType);
     }
   };
+
   return (
     <>
-      <p>{card.trackName}</p>
-      <audio data-testid="audio-component" src={ card.previewUrl } controls>
+      <p>{songType.trackName}</p>
+      <audio data-testid="audio-component" src={ songType.previewUrl } controls>
         <track kind="captions" />
         O seu navegador não suporta o elemento
         {' '}
@@ -31,15 +34,20 @@ function MusicCard({ card }: MusicCardProps) {
         .
       </audio>
       <label
-        htmlFor={ `favorite-id${card.trackId}` }
-        data-testid={ `checkbox-music-${card.trackId}` }
+        htmlFor={ `favorite-id${songType.trackId}` }
+        data-testid={ `checkbox-music-${songType.trackId}` }
       >
-        <img src={ `/src/images/${heartPng}` } alt="favorite" />
+        <img
+          src={ isFavorite
+            ? `/src/images/${fullHeart}` : `/src/images/${emptyHeart}` }
+          alt="favorite"
+        />
 
         <input
           type="checkbox"
           name="favorite"
-          id={ `favorite-id${card.trackId}` }
+          checked={ isFavorite }
+          id={ `favorite-id${songType.trackId}` }
           onChange={ handleFavorite }
         />
       </label>

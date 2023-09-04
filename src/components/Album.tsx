@@ -3,7 +3,11 @@ import { useEffect, useState } from 'react';
 import getMusics from '../services/musicsAPI';
 import { AlbumType, SongType } from '../types';
 import MusicCard from './MusicCard';
+import { getFavoriteSongs } from '../services/favoriteSongsAPI';
 
+type SongTypePlus = {
+  isFavorite: boolean,
+  songType: SongType };
 function Album() {
   const params = useParams();
   const [carregando, setCarregando] = useState(true);
@@ -11,6 +15,7 @@ function Album() {
   const [song, setSongs] = useState<SongType[]>([]);
   const [name, setName] = useState<string>();
   const [albumName, setAlbumName] = useState<string>();
+  const [songisFavorite, setSongFavorite] = useState<SongTypePlus[]>([]);
   useEffect(() => {
     const getSongs = async () => {
       if (typeof (params.id) !== 'undefined') {
@@ -20,8 +25,22 @@ function Album() {
         setSongs(songType);
       }
     };
+    const favorites = async () => {
+      const favorite = await getFavoriteSongs();
+      const songList = song;
+      const prevSong: SongTypePlus[] = [];
+      songList.map((elemnt) => {
+        const favElement = favorite.find((favs) => elemnt.trackId === favs.trackId);
+        if (typeof (favElement) !== 'undefined') {
+          return prevSong.push({ isFavorite: true, songType: favElement });
+        }
+        return prevSong.push({ isFavorite: false, songType: elemnt });
+      });
+      setSongFavorite(prevSong);
+    };
+    favorites();
     getSongs();
-  }, [params]);
+  }, [params, song, songisFavorite]);
   useEffect(() => {
     const getName = () => {
       if (typeof (title) !== 'undefined') {
@@ -37,12 +56,22 @@ function Album() {
       }
       return false;
     };
+    const getFavoriteCheck = () => {
+      if (songisFavorite.length === song.length) {
+        return true;
+      }
+    };
+    const handleLoading = async () => {
+      if (getName() && getAlbumName() && getFavoriteCheck()) {
+        setCarregando(false);
+      }
+    };
+    getFavoriteCheck();
     getName();
     getAlbumName();
-    if (getName() && getAlbumName()) {
-      setCarregando(false);
-    }
-  }, [title]);
+    handleLoading();
+  }, [song.length, songisFavorite.length, title]);
+
   if (carregando) {
     return <h1>Carregando...</h1>;
   }
@@ -52,9 +81,12 @@ function Album() {
         <h1 data-testid="artist-name">{ name }</h1>
         <h2 data-testid="album-name">{ albumName }</h2>
       </div>
-      {song.map((element) => {
+      {songisFavorite.map((element) => {
         return (
-          <MusicCard key={ element.trackId } card={ element } />
+          <MusicCard
+            key={ element.songType.trackId }
+            card={ element }
+          />
         );
       })}
     </>
