@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { SongType } from '../types';
+import { addSong, removeSong } from '../services/favoriteSongsAPI';
 
 type MusicCardProps = {
   card: SongType
@@ -10,11 +11,13 @@ function MusicCard({ card }: MusicCardProps) {
   const fullHeart = 'checked_heart.png';
   const emptyHeart = 'empty_heart.png';
   const [heartPng, setHeartPng] = useState<Heart>(emptyHeart);
-  const handleFavorite = () => {
+  const handleFavorite = async () => {
     if (heartPng === emptyHeart) {
       setHeartPng(fullHeart);
+      await addSong(card);
     } else {
       setHeartPng(emptyHeart);
+      await removeSong(card);
     }
   };
   return (
